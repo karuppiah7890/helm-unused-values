@@ -33,15 +33,29 @@ func main() {
 		fmt.Printf("error while parsing templates: %v", err)
 	}
 
-	printParseTrees(parseTrees)
+	printSomeNodesInParseTrees(parseTrees)
 }
 
-func printParseTrees(parseTrees []map[string]*parse.Tree) {
+func printSomeNodesInParseTrees(parseTrees []map[string]*parse.Tree) {
 	for _, namedParseTree := range parseTrees {
-		for name, parseTree := range namedParseTree {
-			fmt.Printf("Name: %v\n", name)
-			fmt.Printf("Parse Tree: %v\n", parseTree)
-			fmt.Println()
+		for _, parseTree := range namedParseTree {
+			for _, node := range parseTree.Root.Nodes {
+				if node.Type() == parse.NodeAction {
+					pipe := node.(*parse.ActionNode).Pipe
+					for _, cmd := range pipe.Cmds {
+						for _, argNode := range cmd.Args {
+							if argNode.Type() == parse.NodeField {
+								identifiers := argNode.(*parse.FieldNode).Ident
+								if len(identifiers) > 0 && identifiers[0] == "Values" {
+									fmt.Println(argNode)
+								}
+							}
+							// TODO: Handle parse.NodeChain node type of arg
+							// node.
+						}
+					}
+				}
+			}
 		}
 	}
 }
