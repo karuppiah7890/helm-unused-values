@@ -3,6 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"text/template/parse"
+
+	"github.com/karuppiah7890/helm-unused-values/pkg"
 )
 
 func main() {
@@ -15,5 +19,29 @@ func main() {
 
 	helmChartPath := os.Args[1]
 
-	fmt.Println(helmChartPath)
+	templatesDirPath := filepath.Join(helmChartPath, "templates")
+
+	templateFiles, err := pkg.ReadTemplates(templatesDirPath)
+
+	if err != nil {
+		fmt.Printf("error while reading templates: %v", err)
+	}
+
+	parseTrees, err := pkg.ParseTemplateFiles(templateFiles)
+
+	if err != nil {
+		fmt.Printf("error while parsing templates: %v", err)
+	}
+
+	printParseTrees(parseTrees)
+}
+
+func printParseTrees(parseTrees []map[string]*parse.Tree) {
+	for _, namedParseTree := range parseTrees {
+		for name, parseTree := range namedParseTree {
+			fmt.Printf("Name: %v\n", name)
+			fmt.Printf("Parse Tree: %v\n", parseTree)
+			fmt.Println()
+		}
+	}
 }
