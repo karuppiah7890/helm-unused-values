@@ -9,6 +9,9 @@ func GetValues(namedParseTrees []map[string]*parse.Tree) []string {
 	for _, namedParseTree := range namedParseTrees {
 		for _, parseTree := range namedParseTree {
 			for _, node := range parseTree.Root.Nodes {
+				// TODO: Handle If Node, with Node .
+				// Check what else to handle here - what other nodes can have
+				// .Values usage?
 				if node.Type() == parse.NodeAction {
 					pipe := node.(*parse.ActionNode).Pipe
 					for _, cmd := range pipe.Cmds {
